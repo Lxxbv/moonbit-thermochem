@@ -6,6 +6,8 @@ jobs:
     permissions:
       contents: read
     runs-on: ubuntu-latest
+    env:
+      MOONCAKES_CREDENTIALS_JSON: ${{ secrets.MOONCAKES_CREDENTIALS_JSON }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +25,12 @@ jobs:
       - name: moon test
         run: moon test --deny-warn
       - name: publish
-        if: ${{ secrets.MOONCAKES_TOKEN != '' }}
-        env:
-          MOONCAKES_TOKEN: ${{ secrets.MOONCAKES_TOKEN }}
-        run: moon publish
+        if: ${{ env.MOONCAKES_CREDENTIALS_JSON != '' }}
+        run: |
+          mkdir -p ~/.moon
+          printf '%s' "$MOONCAKES_CREDENTIALS_JSON" > ~/.moon/credentials.json
+          chmod 600 ~/.moon/credentials.json
+          moon publish
+      - name: skip publish without credentials
+        if: ${{ env.MOONCAKES_CREDENTIALS_JSON == '' }}
+        run: echo "Skipping publish: MOONCAKES_CREDENTIALS_JSON is not configured."
