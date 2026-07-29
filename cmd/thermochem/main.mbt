@@ -1,6 +1,6 @@
 ///|
 pub fn help_text() -> String {
-  "Usage:\nmoon run cmd/thermochem -- species CH4 1200\nmoon run cmd/thermochem -- reaction methane-combustion 298.15\nmoon run cmd/thermochem -- flame methane-combustion 298.15\nmoon run cmd/thermochem -- ammonia 700\n\nCommands: species, reaction, flame, ammonia"
+  "Usage:\nmoon run cmd/thermochem -- species CH4 1200\nmoon run cmd/thermochem -- reaction methane-combustion 298.15\nmoon run cmd/thermochem -- flame methane-air 298.15\nmoon run cmd/thermochem -- ammonia 700\n\nCommands: species, reaction, flame, ammonia"
 }
 
 ///|
@@ -28,8 +28,28 @@ fn render_reaction(temperature : Double) -> String {
 }
 
 ///|
+fn term(
+  name : String,
+  coefficient : Double,
+) -> @moonbit-thermochem.StoichTerm raise @moonbit-thermochem.ThermoError {
+  @moonbit-thermochem.StoichTerm::new(
+    species=@data.get_species(name),
+    coefficient~,
+  )
+}
+
+///|
+fn methane_air_combustion() -> @moonbit-thermochem.Reaction raise @moonbit-thermochem.ThermoError {
+  @moonbit-thermochem.Reaction::new(
+    label="methane-air: CH4 + 2 O2 + 7.52 N2 -> CO2 + 2 H2O + 7.52 N2",
+    reactants=[term("CH4", 1.0), term("O2", 2.0), term("N2", 7.52)],
+    products=[term("CO2", 1.0), term("H2O", 2.0), term("N2", 7.52)],
+  )
+}
+
+///|
 fn render_flame(temperature : Double) -> String {
-  let reaction = @data.methane_combustion() catch {
+  let reaction = methane_air_combustion() catch {
     error => return "error: \{to_repr(error)}"
   }
   let flame_temperature = @moonbit-thermochem.adiabatic_flame_temperature(
@@ -63,7 +83,7 @@ pub fn render(args : Array[String]) -> String {
         Some(value) => render_reaction(value)
         None => "error: temperature must be a number"
       }
-    ["flame", "methane-combustion", temperature] =>
+    ["flame", "methane-air", temperature] =>
       match parse_temperature(temperature) {
         Some(value) => render_flame(value)
         None => "error: temperature must be a number"

@@ -17,6 +17,6 @@ Run the deterministic examples from a checkout:
 ```bash
 moon run cmd/thermochem -- species CH4 1200
 moon run cmd/thermochem -- reaction methane-combustion 298.15
-moon run cmd/thermochem -- flame methane-combustion 298.15
+moon run cmd/thermochem -- flame methane-air 298.15
 moon run cmd/thermochem -- ammonia 700
 ```
