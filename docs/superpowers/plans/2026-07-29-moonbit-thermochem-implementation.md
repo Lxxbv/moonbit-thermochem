@@ -361,7 +361,8 @@ test "nasa7 constant heat capacity" {
 test "nasa7 enthalpy and entropy nondimensional forms" {
   let segment = constant_cp_segment()
   inspect(segment.h_over_rt(300.0), content="3.5")
-  inspect(segment.s_over_r(1.0), content="1")
+  let entropy = segment.s_over_r(300.0)
+  inspect(entropy > 20.96 && entropy < 20.97, content="true")
 }
 ```
 
