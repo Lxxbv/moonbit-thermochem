@@ -28,6 +28,9 @@ pub fn solve_bisection(
   max_iterations~ : Int,
   f : (Double) -> Double raise ThermoError,
 ) -> Double raise ThermoError {
+  if lower > upper {
+    raise ThermoError::SolverFailed(message="invalid bracket bounds")
+  }
   let mut lower = lower
   let mut upper = upper
   let mut lower_value = f(lower)

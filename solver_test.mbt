@@ -30,6 +30,40 @@ test "bisection reports missing bracket" {
 }
 
 ///|
+test "bisection rejects inverted bounds" {
+  try
+    solve_bisection(
+      lower=10.0,
+      upper=0.0,
+      tolerance=0.000001,
+      max_iterations=80,
+      x => x - 2.0,
+    )
+  catch {
+    ThermoError::SolverFailed(message~) =>
+      inspect(message, content="invalid bracket bounds")
+    _ => fail("unexpected error")
+  } noraise {
+    _ => fail("expected solver error")
+  }
+}
+
+///|
+test "bisection reports maximum iteration exhaustion" {
+  try
+    solve_bisection(lower=0.0, upper=10.0, tolerance=0.0, max_iterations=1, x => {
+      x - 2.0
+    })
+  catch {
+    ThermoError::SolverFailed(message~) =>
+      inspect(message, content="maximum iterations reached")
+    _ => fail("unexpected error")
+  } noraise {
+    _ => fail("expected solver error")
+  }
+}
+
+///|
 fn test_species(
   name : String,
   model : ThermoModel,
@@ -82,6 +116,24 @@ test "adiabatic flame temperature balances product and reactant enthalpy" {
     upper_bound=200.0,
   )
   inspect(temperature > 99.999 && temperature < 100.001, content="true")
+}
+
+///|
+test "adiabatic flame temperature evaluates reactants at initial temperature" {
+  let reactant = linear_enthalpy_species("reactant")
+  let product = linear_enthalpy_species("product")
+  let reaction = Reaction::new(
+    label="2 reactants -> product",
+    reactants=[StoichTerm::new(species=reactant, coefficient=2.0)],
+    products=[StoichTerm::new(species=product, coefficient=1.0)],
+  )
+  let temperature = adiabatic_flame_temperature(
+    reaction,
+    initial_temperature=75.0,
+    lower_bound=50.0,
+    upper_bound=200.0,
+  )
+  inspect(temperature > 149.999 && temperature < 150.001, content="true")
 }
 
 ///|
