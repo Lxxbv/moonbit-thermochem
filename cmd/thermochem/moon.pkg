@@ -1,9 +1,6 @@
 import {
-  "Hjyyutr/moonbit-thermochem",
-  "Hjyyutr/moonbit-thermochem/data",
-  "Hjyyutr/moonbit-thermochem/examples",
+  "Hjyyutr/moonbit-thermochem/cmd/thermochem_cli",
   "moonbitlang/core/env",
-  "moonbitlang/core/string",
 }
 
 pkgtype(kind: "executable")
