@@ -1,6 +1,6 @@
 ///|
 pub fn help_text() -> String {
-  "Usage:\nmoon run cmd/thermochem -- species CH4 1200\nmoon run cmd/thermochem -- reaction methane-combustion 298.15\nmoon run cmd/thermochem -- flame methane-air 298.15\nmoon run cmd/thermochem -- ammonia 700\n\nCommands: species, reaction, flame, ammonia"
+  "Usage:\nmoon run cmd/thermochem -- species CH4 1200\nmoon run cmd/thermochem -- reaction methane-combustion 298.15\nmoon run cmd/thermochem -- flame methane-combustion 298.15\nmoon run cmd/thermochem -- ammonia 700\n\nCommands: species, reaction, flame, ammonia"
 }
 
 ///|
@@ -28,6 +28,22 @@ fn render_reaction(temperature : Double) -> String {
 }
 
 ///|
+fn render_flame(temperature : Double) -> String {
+  let reaction = @data.methane_combustion() catch {
+    error => return "error: \{to_repr(error)}"
+  }
+  let flame_temperature = @moonbit-thermochem.adiabatic_flame_temperature(
+    reaction,
+    initial_temperature=temperature,
+  ) catch {
+    @moonbit-thermochem.ThermoError::NoThermoSegment(..) =>
+      return "\{reaction.label}\ntemperature: \{temperature} K\nflame temperature: unavailable (outside bundled data range)"
+    error => return "error: \{to_repr(error)}"
+  }
+  "\{reaction.label}\ntemperature: \{temperature} K\nflame temperature: \{flame_temperature} K"
+}
+
+///|
 fn render_ammonia(temperature : Double) -> String {
   @examples.ammonia_synthesis_report(temperature~) catch {
     error => "error: \{to_repr(error)}"
@@ -47,9 +63,9 @@ pub fn render(args : Array[String]) -> String {
         Some(value) => render_reaction(value)
         None => "error: temperature must be a number"
       }
-    ["flame", "methane-air", temperature] =>
+    ["flame", "methane-combustion", temperature] =>
       match parse_temperature(temperature) {
-        Some(value) => render_reaction(value)
+        Some(value) => render_flame(value)
         None => "error: temperature must be a number"
       }
     ["ammonia", temperature] =>
