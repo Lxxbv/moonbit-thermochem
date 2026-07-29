@@ -15,7 +15,10 @@ pub(all) struct TemperatureRange {
 } derive(Debug, Eq)
 
 ///|
-pub fn TemperatureRange::new(lower~ : Double, upper~ : Double) -> TemperatureRange raise ThermoError {
+pub fn TemperatureRange::new(
+  lower~ : Double,
+  upper~ : Double,
+) -> TemperatureRange raise ThermoError {
   if lower > upper {
     raise ThermoError::InvalidTemperatureRange(lower~, upper~)
   }
@@ -23,13 +26,23 @@ pub fn TemperatureRange::new(lower~ : Double, upper~ : Double) -> TemperatureRan
 }
 
 ///|
-pub fn TemperatureRange::contains(self : TemperatureRange, temperature : Double) -> Bool {
+pub fn TemperatureRange::contains(
+  self : TemperatureRange,
+  temperature : Double,
+) -> Bool {
   self.lower <= temperature && temperature <= self.upper
 }
 
 ///|
-pub fn TemperatureRange::validate(self : TemperatureRange, temperature : Double) -> Unit raise ThermoError {
+pub fn TemperatureRange::validate(
+  self : TemperatureRange,
+  temperature : Double,
+) -> Unit raise ThermoError {
   if !self.contains(temperature) {
-    raise ThermoError::TemperatureOutOfRange(value=temperature, lower=self.lower, upper=self.upper)
+    raise ThermoError::TemperatureOutOfRange(
+      value=temperature,
+      lower=self.lower,
+      upper=self.upper,
+    )
   }
 }
