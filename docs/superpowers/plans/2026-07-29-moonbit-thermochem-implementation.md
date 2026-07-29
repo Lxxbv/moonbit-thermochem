@@ -412,8 +412,8 @@ git commit -m "feat: evaluate nasa7 thermodynamic polynomials"
 ///|
 test "species delegates to nasa7 segment and converts by gas constant" {
   let species = Species::new(
-    name="X",
-    formula=parse_formula("X"),
+    name="H",
+    formula=parse_formula("H"),
     phase=Phase::Gas,
     molar_mass=1.0,
     formation_enthalpy=0.0,
@@ -426,15 +426,15 @@ test "species delegates to nasa7 segment and converts by gas constant" {
 ///|
 test "species reports missing segment for outside temperature" {
   let species = Species::new(
-    name="X",
-    formula=parse_formula("X"),
+    name="H",
+    formula=parse_formula("H"),
     phase=Phase::Gas,
     molar_mass=1.0,
     formation_enthalpy=0.0,
     model=ThermoModel::Nasa7([constant_cp_segment()]),
   )
   try species.cp_molar(temperature=100.0) catch {
-    ThermoError::NoThermoSegment(species="X", temperature=100.0) => inspect("missing", content="missing")
+    ThermoError::NoThermoSegment(species="H", temperature=100.0) => inspect("missing", content="missing")
     _ => fail("unexpected error")
   } noraise {
     _ => fail("expected missing segment")
