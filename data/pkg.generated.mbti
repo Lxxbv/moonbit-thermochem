@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Hjyyutr/moonbit-thermochem/data"
+
+import {
+  "Hjyyutr/moonbit-thermochem",
+}
+
+// Values
+pub fn ammonia_synthesis() -> @moonbit-thermochem.Reaction raise @moonbit-thermochem.ThermoError
+
+pub fn get_species(String) -> @moonbit-thermochem.Species raise @moonbit-thermochem.ThermoError
+
+pub fn hydrogen_combustion() -> @moonbit-thermochem.Reaction raise @moonbit-thermochem.ThermoError
+
+pub fn methane_combustion() -> @moonbit-thermochem.Reaction raise @moonbit-thermochem.ThermoError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

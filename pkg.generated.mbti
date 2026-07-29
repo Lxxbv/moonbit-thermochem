@@ -1,0 +1,111 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Hjyyutr/moonbit-thermochem"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn adiabatic_flame_temperature(Reaction, initial_temperature~ : Double, lower_bound? : Double, upper_bound? : Double) -> Double raise ThermoError
+
+pub fn parse_formula(String) -> Formula raise ThermoError
+
+pub fn solve_bisection(lower~ : Double, upper~ : Double, tolerance~ : Double, max_iterations~ : Int, (Double) -> Double raise ThermoError) -> Double raise ThermoError
+
+// Errors
+pub(all) suberror ThermoError {
+  InvalidTemperatureRange(lower~ : Double, upper~ : Double)
+  TemperatureOutOfRange(value~ : Double, lower~ : Double, upper~ : Double)
+  NoThermoSegment(species~ : String, temperature~ : Double)
+  MissingSpecies(name~ : String)
+  ParseError(line~ : Int, column~ : Int, message~ : String)
+  SolverFailed(message~ : String)
+} derive(Eq, @debug.Debug)
+
+// Types and methods
+pub(all) struct ElementCount {
+  symbol : String
+  count : Int
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Formula {
+  elements : Array[ElementCount]
+} derive(Eq, @debug.Debug)
+pub fn Formula::count(Self, String) -> Int
+
+pub(all) struct Mixture {
+  amounts : Array[SpeciesAmount]
+} derive(Eq, @debug.Debug)
+pub fn Mixture::new(amounts~ : Array[SpeciesAmount]) -> Self
+
+pub(all) struct Nasa7Segment {
+  range : TemperatureRange
+  a1 : Double
+  a2 : Double
+  a3 : Double
+  a4 : Double
+  a5 : Double
+  a6 : Double
+  a7 : Double
+} derive(Eq, @debug.Debug)
+pub fn Nasa7Segment::cp_over_r(Self, Double) -> Double raise ThermoError
+pub fn Nasa7Segment::h_over_rt(Self, Double) -> Double raise ThermoError
+pub fn Nasa7Segment::new(range~ : TemperatureRange, a1~ : Double, a2~ : Double, a3~ : Double, a4~ : Double, a5~ : Double, a6~ : Double, a7~ : Double) -> Self
+pub fn Nasa7Segment::s_over_r(Self, Double) -> Double raise ThermoError
+
+pub(all) enum Phase {
+  Gas
+  Liquid
+  Solid
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Reaction {
+  label : String
+  reactants : Array[StoichTerm]
+  products : Array[StoichTerm]
+} derive(Eq, @debug.Debug)
+pub fn Reaction::enthalpy(Self, temperature~ : Double) -> Double raise ThermoError
+pub fn Reaction::new(label~ : String, reactants~ : Array[StoichTerm], products~ : Array[StoichTerm]) -> Self
+
+pub(all) struct Species {
+  name : String
+  formula : Formula
+  phase : Phase
+  molar_mass : Double
+  formation_enthalpy : Double
+  model : ThermoModel
+} derive(Eq, @debug.Debug)
+pub fn Species::cp_molar(Self, temperature~ : Double) -> Double raise ThermoError
+pub fn Species::enthalpy_molar(Self, temperature~ : Double) -> Double raise ThermoError
+pub fn Species::entropy_molar(Self, temperature~ : Double) -> Double raise ThermoError
+pub fn Species::new(name~ : String, formula~ : Formula, phase~ : Phase, molar_mass~ : Double, formation_enthalpy~ : Double, model~ : ThermoModel) -> Self
+
+pub(all) struct SpeciesAmount {
+  species : Species
+  amount : Double
+} derive(Eq, @debug.Debug)
+pub fn SpeciesAmount::new(species~ : Species, amount~ : Double) -> Self
+
+pub(all) struct StoichTerm {
+  species : Species
+  coefficient : Double
+} derive(Eq, @debug.Debug)
+pub fn StoichTerm::new(species~ : Species, coefficient~ : Double) -> Self
+
+pub(all) struct TemperatureRange {
+  lower : Double
+  upper : Double
+} derive(Eq, @debug.Debug)
+pub fn TemperatureRange::contains(Self, Double) -> Bool
+pub fn TemperatureRange::new(lower~ : Double, upper~ : Double) -> Self raise ThermoError
+pub fn TemperatureRange::validate(Self, Double) -> Unit raise ThermoError
+
+pub(all) enum ThermoModel {
+  Nasa7(Array[Nasa7Segment])
+  ConstantEnthalpy(Double)
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+
