@@ -1,0 +1,17 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Hjyyutr/moonbit-thermochem/parser"
+
+import {
+  "Hjyyutr/moonbit-thermochem",
+}
+
+// Values
+pub fn parse_nasa7_thermo(String) -> Array[@moonbit-thermochem.Species] raise @moonbit-thermochem.ThermoError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
