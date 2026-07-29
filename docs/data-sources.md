@@ -3,7 +3,7 @@
 The `data` package intentionally bundles only eight gas species: `CH4`, `O2`,
 `N2`, `CO2`, `H2O`, `CO`, `H2`, and `NH3`. Their two-region NASA7
 coefficients are transcribed from Cantera's public
-[GRI-Mech 3.0 `gri30.yaml`](https://raw.githubusercontent.com/Cantera/cantera/main/data/gri30.yaml)
+[GRI-Mech 3.0 `gri30.yaml` at Cantera v3.0.0](https://raw.githubusercontent.com/Cantera/cantera/v3.0.0/data/gri30.yaml)
 file. The same file identifies the source as GRI-Mech Version 3.0, released on
 1999-07-30, and labels the records as NASA7.
 
@@ -12,9 +12,11 @@ documents the related CEA convention: a seven-term heat-capacity polynomial
 with integration constants for enthalpy and entropy. This package uses the
 root package's compatible `Nasa7Segment` representation.
 
-The `formation_enthalpy` fields are derived at 298.15 K from those same low
+The `formation_enthalpy` fields are derived at 298.15 K from the same low
 temperature NASA7 coefficients using the root package's enthalpy equation.
-The molar masses use conventional atomic weights from the
+This is inside the declared range for every bundled species except `N2`, whose
+record begins at 300 K; its stored value is therefore a 1.85 K extrapolation
+for convenience metadata. The molar masses use conventional atomic weights from the
 [NIST periodic table](https://physics.nist.gov/PhysRefData/PeriodicTable/).
 
 ## Limitation
