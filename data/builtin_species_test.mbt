@@ -21,6 +21,8 @@ test "builtin species table returns every supported species" {
 ///|
 test "builtin methane combustion reaction terms" {
   let reaction = methane_combustion()
+  inspect(reaction.reactants.length(), content="2")
+  inspect(reaction.products.length(), content="2")
   inspect(reaction.reactants[0].species.name, content="CH4")
   inspect(reaction.reactants[0].coefficient, content="1")
   inspect(reaction.reactants[1].species.name, content="O2")
@@ -34,6 +36,8 @@ test "builtin methane combustion reaction terms" {
 ///|
 test "builtin hydrogen combustion reaction terms" {
   let reaction = hydrogen_combustion()
+  inspect(reaction.reactants.length(), content="2")
+  inspect(reaction.products.length(), content="1")
   inspect(reaction.reactants[0].species.name, content="H2")
   inspect(reaction.reactants[0].coefficient, content="2")
   inspect(reaction.reactants[1].species.name, content="O2")
@@ -45,6 +49,8 @@ test "builtin hydrogen combustion reaction terms" {
 ///|
 test "builtin ammonia synthesis reaction terms" {
   let reaction = ammonia_synthesis()
+  inspect(reaction.reactants.length(), content="2")
+  inspect(reaction.products.length(), content="1")
   inspect(reaction.reactants[0].species.name, content="N2")
   inspect(reaction.reactants[0].coefficient, content="1")
   inspect(reaction.reactants[1].species.name, content="H2")
