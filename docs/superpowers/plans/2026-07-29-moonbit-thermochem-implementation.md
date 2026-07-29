@@ -90,6 +90,7 @@ options(
 
 ```text
 moon.pkg
+// Root library package; public API is added by later tasks.
 ```
 
 ```text
@@ -417,7 +418,8 @@ test "species delegates to nasa7 segment and converts by gas constant" {
     formation_enthalpy=0.0,
     model=ThermoModel::Nasa7([constant_cp_segment()]),
   )
-  inspect(species.cp_molar(temperature=300.0), content="29.099")
+  let cp = species.cp_molar(temperature=300.0)
+  inspect(cp > 29.10 && cp < 29.11, content="true")
 }
 
 ///|
