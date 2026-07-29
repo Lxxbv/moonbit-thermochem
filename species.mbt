@@ -11,6 +11,7 @@ pub(all) enum Phase {
 ///|
 pub(all) enum ThermoModel {
   Nasa7(Array[Nasa7Segment])
+  ConstantEnthalpy(Double)
 } derive(Debug, Eq)
 
 ///|
@@ -49,6 +50,8 @@ fn Species::nasa7_segment_for(
       }
       raise ThermoError::NoThermoSegment(species=self.name, temperature~)
     }
+    ConstantEnthalpy(_) =>
+      raise ThermoError::NoThermoSegment(species=self.name, temperature~)
   }
 }
 
@@ -66,9 +69,13 @@ pub fn Species::enthalpy_molar(
   self : Species,
   temperature~ : Double,
 ) -> Double raise ThermoError {
-  self.nasa7_segment_for(temperature).h_over_rt(temperature) *
-  gas_constant_j_per_mol_k *
-  temperature
+  match self.model {
+    Nasa7(_) =>
+      self.nasa7_segment_for(temperature).h_over_rt(temperature) *
+      gas_constant_j_per_mol_k *
+      temperature
+    ConstantEnthalpy(enthalpy) => enthalpy
+  }
 }
 
 ///|
