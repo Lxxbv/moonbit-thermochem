@@ -11,6 +11,55 @@ test "parse compact nasa7 species record" {
 }
 
 ///|
+test "parser constructs low and high NASA7 segments" {
+  let text =
+    #|CH4 G 200.0 1000.0 6000.0
+    #|LOW 3.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|HIGH 4.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|
+  let species = parse_nasa7_thermo(text)[0]
+  let low_cp = species.cp_molar(temperature=300.0)
+  let high_cp = species.cp_molar(temperature=2000.0)
+  inspect(low_cp > 24.94 && low_cp < 24.95, content="true")
+  inspect(high_cp > 33.25 && high_cp < 33.26, content="true")
+}
+
+///|
+test "parser reports bad header range at middle temperature" {
+  let text =
+    #|CH4 G 1000 200 6000
+    #|LOW 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|HIGH 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|
+  try parse_nasa7_thermo(text) catch {
+    @moonbit-thermochem.ThermoError::ParseError(line=1, column=12, message~) =>
+      inspect(message, content="expected low <= mid <= high")
+    _ => fail("unexpected error")
+  } noraise {
+    _ => fail("expected parse error")
+  }
+}
+
+///|
+test "parser reports physical location for formula errors in later records" {
+  let text =
+    #|CH4 G 200.0 1000.0 6000.0
+    #|LOW 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|HIGH 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|CH4! G 200.0 1000.0 6000.0
+    #|LOW 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|HIGH 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|
+  try parse_nasa7_thermo(text) catch {
+    @moonbit-thermochem.ThermoError::ParseError(line=4, column=4, message~) =>
+      inspect(message, content="expected uppercase element symbol")
+    _ => fail("unexpected error")
+  } noraise {
+    _ => fail("expected parse error")
+  }
+}
+
+///|
 test "parser reports line for bad coefficient" {
   let text =
     #|CH4 G 200.0 1000.0 6000.0

@@ -1,6 +1,8 @@
 ///|
 priv struct Header {
   name : String
+  name_column : Int
+  line : Int
   phase : @moonbit-thermochem.Phase
   low : Double
   mid : Double
@@ -47,12 +49,31 @@ fn parse_header(
   if tokens.length() != 5 {
     parse_error(line~, column=1, message="expected name phase low mid high")
   }
+  let low = parse_number(tokens[2], line)
+  let mid = parse_number(tokens[3], line)
+  let high = parse_number(tokens[4], line)
+  if low > mid {
+    parse_error(
+      line~,
+      column=tokens[3].column,
+      message="expected low <= mid <= high",
+    )
+  }
+  if mid > high {
+    parse_error(
+      line~,
+      column=tokens[4].column,
+      message="expected low <= mid <= high",
+    )
+  }
   {
     name: tokens[0].text,
+    name_column: tokens[0].column,
+    line,
     phase: parse_phase(tokens[1], line),
-    low: parse_number(tokens[2], line),
-    mid: parse_number(tokens[3], line),
-    high: parse_number(tokens[4], line),
+    low,
+    mid,
+    high,
   }
 }
 
@@ -82,6 +103,19 @@ fn species_from_record(
   low_coefficients : Array[Double],
   high_coefficients : Array[Double],
 ) -> @moonbit-thermochem.Species raise @moonbit-thermochem.ThermoError {
+  let formula = @moonbit-thermochem.parse_formula(header.name) catch {
+    @moonbit-thermochem.ThermoError::ParseError(
+      column=local_column,
+      message~,
+      ..
+    ) =>
+      parse_error(
+        line=header.line,
+        column=header.name_column + local_column - 1,
+        message~,
+      )
+    error => raise error
+  }
   let low = @moonbit-thermochem.Nasa7Segment::new(
     range=@moonbit-thermochem.TemperatureRange::new(
       lower=header.low,
@@ -110,7 +144,7 @@ fn species_from_record(
   )
   @moonbit-thermochem.Species::new(
     name=header.name,
-    formula=@moonbit-thermochem.parse_formula(header.name),
+    formula~,
     phase=header.phase,
     molar_mass=0.0,
     formation_enthalpy=0.0,
@@ -119,7 +153,7 @@ fn species_from_record(
 }
 
 ///|
-/// Parses compact NASA7 records with `name phase low mid high`, `LOW`, and `HIGH` lines.
+/// Parses compact NASA7 records; `name` must be parseable as a chemical formula.
 pub fn parse_nasa7_thermo(
   text : String,
 ) -> Array[@moonbit-thermochem.Species] raise @moonbit-thermochem.ThermoError {
