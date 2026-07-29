@@ -1,1 +1,9 @@
 .worktrees/
+_build/
+target/
+.moon/
+.repos/
+.firecrawl/
+*.log
+*.tmp
+credentials.json
