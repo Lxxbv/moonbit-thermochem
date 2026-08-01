@@ -11,19 +11,42 @@ fn parse_temperature(value : String) -> Double? {
 }
 
 ///|
+fn render_thermo_error(error : @moonbit-thermochem.ThermoError) -> String {
+  match error {
+    @moonbit-thermochem.ThermoError::InvalidTemperatureRange(lower~, upper~) =>
+      "invalid temperature range: \{lower} > \{upper}"
+    @moonbit-thermochem.ThermoError::TemperatureOutOfRange(
+      value~,
+      lower~,
+      upper~
+    ) => "temperature \{value} K outside range \{lower}-\{upper} K"
+    @moonbit-thermochem.ThermoError::NoThermoSegment(species~, temperature~) =>
+      "no thermo segment for \{species} at \{temperature} K"
+    @moonbit-thermochem.ThermoError::MissingSpecies(name~) =>
+      "missing species: \{name}"
+    @moonbit-thermochem.ThermoError::UnknownElement(symbol~) =>
+      "unknown element: \{symbol}"
+    @moonbit-thermochem.ThermoError::ParseError(line~, column~, message~) =>
+      "parse error at \{line}:\{column}: \{message}"
+    @moonbit-thermochem.ThermoError::SolverFailed(message~) =>
+      "solver failed: \{message}"
+  }
+}
+
+///|
 fn render_species(name : String, temperature : Double) -> String {
   try {
     let species = @data.get_species(name)
     "\{species.name}\ntemperature: \{temperature} K\nCp: \{species.cp_molar(temperature~)} J/mol/K\nenthalpy: \{species.enthalpy_molar(temperature~)} J/mol\nentropy: \{species.entropy_molar(temperature~)} J/mol/K"
   } catch {
-    error => "error: \{to_repr(error)}"
+    error => "error: \{render_thermo_error(error)}"
   }
 }
 
 ///|
 fn render_reaction(temperature : Double) -> String {
   @examples.methane_combustion_report(initial_temperature=temperature) catch {
-    error => "error: \{to_repr(error)}"
+    error => "error: \{render_thermo_error(error)}"
   }
 }
 
@@ -50,7 +73,7 @@ fn methane_air_combustion() -> @moonbit-thermochem.Reaction raise @moonbit-therm
 ///|
 fn render_flame(temperature : Double) -> String {
   let reaction = methane_air_combustion() catch {
-    error => return "error: \{to_repr(error)}"
+    error => return "error: \{render_thermo_error(error)}"
   }
   let flame_temperature = @moonbit-thermochem.adiabatic_flame_temperature(
     reaction,
@@ -58,7 +81,7 @@ fn render_flame(temperature : Double) -> String {
   ) catch {
     @moonbit-thermochem.ThermoError::NoThermoSegment(..) =>
       return "\{reaction.label}\ntemperature: \{temperature} K\nflame temperature: unavailable (outside bundled data range)"
-    error => return "error: \{to_repr(error)}"
+    error => return "error: \{render_thermo_error(error)}"
   }
   "\{reaction.label}\ntemperature: \{temperature} K\nflame temperature: \{flame_temperature} K"
 }
@@ -66,7 +89,7 @@ fn render_flame(temperature : Double) -> String {
 ///|
 fn render_ammonia(temperature : Double) -> String {
   @examples.ammonia_synthesis_report(temperature~) catch {
-    error => "error: \{to_repr(error)}"
+    error => "error: \{render_thermo_error(error)}"
   }
 }
 
