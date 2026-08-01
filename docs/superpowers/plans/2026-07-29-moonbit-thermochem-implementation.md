@@ -68,17 +68,17 @@ Create or modify these files:
 - Create: `README.md`
 
 **Interfaces:**
-- Produces module name: `Hjyyutr/moonbit-thermochem`
+- Produces module name: `Lxxbv/moonbit-thermochem`
 - Produces root package with no public API yet.
 
 - [ ] **Step 1: Create minimal module files**
 
 ```text
 moon.mod
-name = "Hjyyutr/moonbit-thermochem"
+name = "Lxxbv/moonbit-thermochem"
 version = "0.1.0"
 readme = "README.mbt.md"
-repository = "https://github.com/Hjyyutr/moonbit-thermochem"
+repository = "https://github.com/Lxxbv/moonbit-thermochem"
 license = "Apache-2.0"
 keywords = ["thermochemistry", "nasa-polynomial", "combustion", "enthalpy", "moonbit"]
 description = "Thermochemical property calculations for MoonBit, including NASA polynomials, reaction enthalpy, and flame-temperature estimates."
@@ -117,7 +117,7 @@ Thermochemical property calculations for MoonBit.
 This package provides NASA polynomial data models, species Cp/H/S evaluation, reaction enthalpy calculation, and small reproducible examples for combustion and ammonia synthesis.
 
 ```mbt nocheck
-moon add Hjyyutr/moonbit-thermochem
+moon add Lxxbv/moonbit-thermochem
 ```
 ````
 

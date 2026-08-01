@@ -1,10 +1,10 @@
-name = "Hjyyutr/moonbit-thermochem"
+name = "Lxxbv/moonbit-thermochem"
 
 version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = "https://github.com/Hjyyutr/moonbit-thermochem"
+repository = "https://github.com/Lxxbv/moonbit-thermochem"
 
 license = "Apache-2.0"
 

@@ -11,7 +11,7 @@ ammonia-synthesis examples. Values use SI molar units by default: J/mol/K for
 heat capacity and entropy, and J/mol for enthalpy.
 
 ```mbt nocheck
-moon add Hjyyutr/moonbit-thermochem
+moon add Lxxbv/moonbit-thermochem
 ```
 
 The core examples are checked as part of this checkout. Examples using the

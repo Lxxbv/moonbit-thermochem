@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Hjyyutr/moonbit-thermochem/cmd/thermochem_cli"
+package "Lxxbv/moonbit-thermochem/cmd/thermochem_cli"
 
 // Values
 pub fn help_text() -> String

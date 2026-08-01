@@ -1,5 +1,5 @@
 import {
-  "Hjyyutr/moonbit-thermochem/cmd/thermochem_cli",
+  "Lxxbv/moonbit-thermochem/cmd/thermochem_cli",
   "moonbitlang/core/env",
 }
 

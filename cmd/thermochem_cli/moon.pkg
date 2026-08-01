@@ -1,6 +1,6 @@
 import {
-  "Hjyyutr/moonbit-thermochem",
-  "Hjyyutr/moonbit-thermochem/data",
-  "Hjyyutr/moonbit-thermochem/examples",
+  "Lxxbv/moonbit-thermochem",
+  "Lxxbv/moonbit-thermochem/data",
+  "Lxxbv/moonbit-thermochem/examples",
   "moonbitlang/core/string",
 }

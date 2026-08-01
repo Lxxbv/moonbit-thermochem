@@ -1,8 +1,8 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Hjyyutr/moonbit-thermochem/parser"
+package "Lxxbv/moonbit-thermochem/parser"
 
 import {
-  "Hjyyutr/moonbit-thermochem",
+  "Lxxbv/moonbit-thermochem",
 }
 
 // Values
