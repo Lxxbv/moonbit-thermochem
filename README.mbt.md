@@ -5,9 +5,10 @@ Thermochemical property calculations for MoonBit.
 Status: Work in progress.
 
 This package evaluates NASA7 heat-capacity, enthalpy, and entropy polynomials;
-defines species and reactions; and includes a small, documented data set for
-combustion and ammonia-synthesis examples. Values use SI molar units: J/mol/K
-for heat capacity and entropy, and J/mol for enthalpy.
+defines species and reactions; parses common reaction equations; checks
+elemental balance; and includes a small, documented data set for combustion and
+ammonia-synthesis examples. Values use SI molar units by default: J/mol/K for
+heat capacity and entropy, and J/mol for enthalpy.
 
 ```mbt nocheck
 moon add Hjyyutr/moonbit-thermochem
@@ -89,6 +90,41 @@ test "calculate reaction enthalpy" {
     products=[StoichTerm::new(species=product, coefficient=1.0)],
   )
   inspect(reaction.enthalpy(temperature=298.15), content="-6")
+}
+```
+
+## Parse And Check Reactions
+
+The root package can parse simple stoichiometric equations with integer or
+decimal coefficients, then report elemental balance before a reaction is bound
+to a species data set.
+
+```mbt check
+///|
+test "parse and check reaction balance" {
+  let parsed = parse_reaction_equation(
+    "CH4 + 2 O2 + 7.52 N2 -> CO2 + 2 H2O + 7.52 N2",
+  )
+  inspect(parsed.is_elementally_balanced(), content="true")
+  inspect(parsed.element_balance().length(), content="4")
+}
+```
+
+## Formula And Element Utilities
+
+Formula parsing combines repeated symbols and can compute molar mass, per
+element mass contribution, and mass fraction from the built-in periodic table
+helpers. The element catalog also exposes period, group, block, standard phase,
+and a natural-abundance flag for lightweight validation and reporting.
+
+```mbt check
+///|
+test "formula mass and unit helpers" {
+  let methane = parse_formula("CH4")
+  inspect(methane.molar_mass() > 16.0, content="true")
+  inspect(methane.mass_fraction("C") > 0.7, content="true")
+  inspect(element_group("O"), content="16")
+  inspect(j_per_mol_to_kj_per_mol(12500.0), content="12.5")
 }
 ```
 

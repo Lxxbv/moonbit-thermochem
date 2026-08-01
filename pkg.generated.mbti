@@ -8,7 +8,47 @@ import {
 // Values
 pub fn adiabatic_flame_temperature(Reaction, initial_temperature~ : Double, lower_bound? : Double, upper_bound? : Double) -> Double raise ThermoError
 
+pub fn atomic_number(String) -> Int raise ThermoError
+
+pub fn atomic_weight(String) -> Double raise ThermoError
+
+pub fn celsius_to_kelvin(Double) -> Double
+
+pub fn convert_molar_energy(Double, from~ : EnergyUnit, to~ : EnergyUnit) -> Double
+
+pub fn convert_molar_heat_capacity(Double, from~ : HeatCapacityUnit, to~ : HeatCapacityUnit) -> Double
+
+pub fn convert_temperature(Double, from~ : TemperatureUnit, to~ : TemperatureUnit) -> Double
+
+pub fn element_block(String) -> String raise ThermoError
+
+pub fn element_group(String) -> Int raise ThermoError
+
+pub fn element_info(String) -> ElementInfo raise ThermoError
+
+pub fn element_is_naturally_abundant(String) -> Bool raise ThermoError
+
+pub fn element_name(String) -> String raise ThermoError
+
+pub fn element_period(String) -> Int raise ThermoError
+
+pub fn element_standard_phase(String) -> String raise ThermoError
+
+pub fn is_known_element(String) -> Bool
+
+pub fn j_per_mol_k_to_kj_per_mol_k(Double) -> Double
+
+pub fn j_per_mol_to_kj_per_mol(Double) -> Double
+
+pub fn kelvin_to_celsius(Double) -> Double
+
+pub fn kj_per_mol_k_to_j_per_mol_k(Double) -> Double
+
+pub fn kj_per_mol_to_j_per_mol(Double) -> Double
+
 pub fn parse_formula(String) -> Formula raise ThermoError
+
+pub fn parse_reaction_equation(String) -> ParsedReaction raise ThermoError
 
 pub fn solve_bisection(lower~ : Double, upper~ : Double, tolerance~ : Double, max_iterations~ : Int, (Double) -> Double raise ThermoError) -> Double raise ThermoError
 
@@ -18,20 +58,59 @@ pub(all) suberror ThermoError {
   TemperatureOutOfRange(value~ : Double, lower~ : Double, upper~ : Double)
   NoThermoSegment(species~ : String, temperature~ : Double)
   MissingSpecies(name~ : String)
+  UnknownElement(symbol~ : String)
   ParseError(line~ : Int, column~ : Int, message~ : String)
   SolverFailed(message~ : String)
 } derive(Eq, @debug.Debug)
 
 // Types and methods
+pub(all) struct ElementBalance {
+  symbol : String
+  reactant_atoms : Double
+  product_atoms : Double
+  difference : Double
+} derive(Eq, @debug.Debug)
+pub fn ElementBalance::is_balanced(Self, tolerance? : Double) -> Bool
+
 pub(all) struct ElementCount {
   symbol : String
   count : Int
+} derive(Eq, @debug.Debug)
+
+pub(all) struct ElementInfo {
+  symbol : String
+  name : String
+  atomic_number : Int
+  atomic_weight : Double
+} derive(Eq, @debug.Debug)
+
+pub(all) struct ElementMass {
+  symbol : String
+  count : Int
+  atomic_weight : Double
+  total_mass : Double
+  mass_fraction : Double
+} derive(Eq, @debug.Debug)
+
+pub(all) enum EnergyUnit {
+  JoulePerMol
+  KilojoulePerMol
 } derive(Eq, @debug.Debug)
 
 pub(all) struct Formula {
   elements : Array[ElementCount]
 } derive(Eq, @debug.Debug)
 pub fn Formula::count(Self, String) -> Int
+pub fn Formula::element_mass(Self, String) -> Double raise ThermoError
+pub fn Formula::element_masses(Self) -> Array[ElementMass] raise ThermoError
+pub fn Formula::mass_fraction(Self, String) -> Double raise ThermoError
+pub fn Formula::molar_mass(Self) -> Double raise ThermoError
+pub fn Formula::to_formula_string(Self) -> String
+
+pub(all) enum HeatCapacityUnit {
+  JoulePerMolKelvin
+  KilojoulePerMolKelvin
+} derive(Eq, @debug.Debug)
 
 pub(all) struct Mixture {
   amounts : Array[SpeciesAmount]
@@ -53,6 +132,21 @@ pub fn Nasa7Segment::h_over_rt(Self, Double) -> Double raise ThermoError
 pub fn Nasa7Segment::new(range~ : TemperatureRange, a1~ : Double, a2~ : Double, a3~ : Double, a4~ : Double, a5~ : Double, a6~ : Double, a7~ : Double) -> Self
 pub fn Nasa7Segment::s_over_r(Self, Double) -> Double raise ThermoError
 
+pub(all) struct ParsedReaction {
+  label : String
+  reactants : Array[ParsedStoichTerm]
+  products : Array[ParsedStoichTerm]
+} derive(Eq, @debug.Debug)
+pub fn ParsedReaction::element_balance(Self) -> Array[ElementBalance]
+pub fn ParsedReaction::is_elementally_balanced(Self, tolerance? : Double) -> Bool
+pub fn ParsedReaction::to_reaction(Self, (String) -> Species raise ThermoError) -> Reaction raise ThermoError
+
+pub(all) struct ParsedStoichTerm {
+  name : String
+  formula : Formula
+  coefficient : Double
+} derive(Eq, @debug.Debug)
+
 pub(all) enum Phase {
   Gas
   Liquid
@@ -64,7 +158,9 @@ pub(all) struct Reaction {
   reactants : Array[StoichTerm]
   products : Array[StoichTerm]
 } derive(Eq, @debug.Debug)
+pub fn Reaction::element_balance(Self) -> Array[ElementBalance]
 pub fn Reaction::enthalpy(Self, temperature~ : Double) -> Double raise ThermoError
+pub fn Reaction::is_elementally_balanced(Self, tolerance? : Double) -> Bool
 pub fn Reaction::new(label~ : String, reactants~ : Array[StoichTerm], products~ : Array[StoichTerm]) -> Self
 
 pub(all) struct Species {
@@ -99,6 +195,11 @@ pub(all) struct TemperatureRange {
 pub fn TemperatureRange::contains(Self, Double) -> Bool
 pub fn TemperatureRange::new(lower~ : Double, upper~ : Double) -> Self raise ThermoError
 pub fn TemperatureRange::validate(Self, Double) -> Unit raise ThermoError
+
+pub(all) enum TemperatureUnit {
+  Kelvin
+  Celsius
+} derive(Eq, @debug.Debug)
 
 pub(all) enum ThermoModel {
   Nasa7(Array[Nasa7Segment])

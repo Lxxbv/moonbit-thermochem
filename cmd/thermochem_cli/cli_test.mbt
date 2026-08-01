@@ -21,6 +21,10 @@ test "cli renders the documented demos" {
   let flame = render(["flame", "methane-air", "298.15"])
   inspect(flame.contains("methane-air"), content="true")
   inspect(flame.contains("CH4 + 2 O2 + 7.52 N2"), content="true")
+  inspect(
+    flame.contains("CH4 + 2 O2 + 7.52 N2 -> CO2 + 2 H2O + 7.52 N2"),
+    content="true",
+  )
   inspect(flame.contains("temperature: 298.15 K"), content="true")
   inspect(flame.contains("flame temperature"), content="true")
   inspect(flame.contains("reaction enthalpy"), content="false")

@@ -41,6 +41,22 @@ test "parser reports bad header range at middle temperature" {
 }
 
 ///|
+test "parser reports bad header range at high temperature" {
+  let text =
+    #|CH4 G 200 6000 1000
+    #|LOW 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|HIGH 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+    #|
+  try parse_nasa7_thermo(text) catch {
+    @moonbit-thermochem.ThermoError::ParseError(line=1, column=16, message~) =>
+      inspect(message, content="expected low <= mid <= high")
+    _ => fail("unexpected error")
+  } noraise {
+    _ => fail("expected parse error")
+  }
+}
+
+///|
 test "parser reports physical location for formula errors in later records" {
   let text =
     #|CH4 G 200.0 1000.0 6000.0

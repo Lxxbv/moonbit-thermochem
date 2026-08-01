@@ -4,6 +4,7 @@ pub(all) suberror ThermoError {
   TemperatureOutOfRange(value~ : Double, lower~ : Double, upper~ : Double)
   NoThermoSegment(species~ : String, temperature~ : Double)
   MissingSpecies(name~ : String)
+  UnknownElement(symbol~ : String)
   ParseError(line~ : Int, column~ : Int, message~ : String)
   SolverFailed(message~ : String)
 } derive(Debug, Eq)
